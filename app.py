@@ -48,6 +48,22 @@ def confirm_links(username):
 
     return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
 
+@app.route('/bio/<username>')
+def show_bio(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    user_links = data.get(username, [])
+    return render_template('bio.html', username=username, links=user_links)
+
+@app.route('/user_bio/<username>')
+def user_bio(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    user_links = data.get(username, [])
+    return render_template('bio.html', username=username, links=user_links)
+
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
     with open(DATA_FILE, 'r') as f:
@@ -60,14 +76,6 @@ def delete_link(username, index):
         json.dump(data, f)
 
     return redirect(url_for('user_links', username=username))
-
-@app.route('/bio/<username>')
-def show_bio(username):
-    with open(DATA_FILE, 'r') as f:
-        data = json.load(f)
-
-    user_links = data.get(username, [])
-    return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # تعيين البورت بشكل ديناميكي على Railway
