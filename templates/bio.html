@@ -6,15 +6,30 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f0f0f0;
+            background: #222222;
+            color: #fff;
             text-align: center;
             padding: 50px;
         }
         h1 {
-            color: #333;
+            font-size: 40px;
+            color: #f0f0f0;
+        }
+        .bio-url {
+            font-size: 20px;
+            background-color: #0077cc;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .bio-url:hover {
+            background-color: #005fa3;
         }
         .link-card {
-            background: white;
+            background: #333;
             border-radius: 10px;
             padding: 15px 20px;
             margin: 15px auto;
@@ -38,15 +53,12 @@
 
     <!-- رابط البايو المجمع -->
     <h2>رابطك الشخصي:</h2>
-    <p>
-        <a href="{{ url_for('show_bio', username=username) }}" target="_blank">{{ url_for('show_bio', username=username) }}</a>
-    </p>
+    <a href="{{ bio_url }}" target="_blank" class="bio-url">{{ bio_url }}</a>
 
-    <!-- عرض الروابط -->
     {% if links %}
-        {% for link in links %}
+        {% for title, url in links %}
             <div class="link-card">
-                <a href="{{ link[1] }}" target="_blank">{{ link[0] }}</a>
+                <a href="{{ url }}" target="_blank">{{ title }}</a>
             </div>
         {% endfor %}
     {% else %}
