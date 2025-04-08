@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# تعيين مكان تخزين بيانات اللينكات
+# مكان تخزين بيانات اللينكات
 DATA_FILE = 'links_data.json'
 
 # إذا لم يكن الملف موجوداً، سيتم إنشاؤه
@@ -36,7 +36,17 @@ def user_links(username):
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f)
 
-    return render_template('links.html', username=username, links=data[username], bio_url=f"/bio/{username}")
+    return render_template('links.html', username=username, links=data[username], bio_url=None)
+
+@app.route('/confirm_links/<username>', methods=['POST'])
+def confirm_links(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    # Generate the bio URL after confirmation
+    bio_url = f"/bio/{username}"
+
+    return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
@@ -60,5 +70,5 @@ def show_bio(username):
     return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # اختيار البورت بشكل ديناميكي على Railway
+    port = int(os.environ.get("PORT", 5000))  # تعيين البورت بشكل ديناميكي على Railway
     app.run(host="0.0.0.0", port=port, debug=True)
