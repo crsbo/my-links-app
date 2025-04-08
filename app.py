@@ -5,7 +5,6 @@ import os
 app = Flask(__name__)
 DATA_FILE = 'links_data.json'
 
-# التأكد من وجود ملف البيانات إذا لم يكن موجودًا
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({}, f)
@@ -56,7 +55,7 @@ def show_bio(username):
 
     user_links = data.get(username, [])
 
-    # بناء رابط البايو المجمع
+    # إنشاء رابط البايو المجمع
     bio_url = url_for('show_bio', username=username, _external=True)
 
     return render_template('bio.html', username=username, links=user_links, bio_url=bio_url)
