@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 DATA_FILE = 'links_data.json'
 
-# التأكد من وجود ملف البيانات
+# التأكد من وجود ملف البيانات إذا لم يكن موجودًا
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({}, f)
@@ -21,11 +21,9 @@ def add_links():
 
 @app.route('/add_links/<username>', methods=['GET', 'POST'])
 def user_links(username):
-    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
-    # التأكد من أن المستخدم موجود في البيانات
     if username not in data:
         data[username] = []
 
@@ -33,7 +31,6 @@ def user_links(username):
         title = request.form['title']
         url = request.form['url']
         data[username].append((title, url))
-        # تحديث البيانات في الملف
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f)
 
@@ -41,14 +38,12 @@ def user_links(username):
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
-    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
     if username in data and 0 <= index < len(data[username]):
         data[username].pop(index)
 
-    # تحديث البيانات في الملف
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
 
@@ -56,13 +51,16 @@ def delete_link(username, index):
 
 @app.route('/bio/<username>')
 def show_bio(username):
-    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
     user_links = data.get(username, [])
-    return render_template('bio.html', username=username, links=user_links)
+
+    # بناء رابط البايو المجمع
+    bio_url = url_for('show_bio', username=username, _external=True)
+
+    return render_template('bio.html', username=username, links=user_links, bio_url=bio_url)
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # الحصول على البورت من المتغيرات البيئية
-    app.run(host="0.0.0.0", port=port, debug=True)  # تشغيل التطبيق في وضع الـ debug
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
