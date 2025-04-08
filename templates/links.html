@@ -6,29 +6,35 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #222222;
-            color: #fff;
+            background: #f0f0f0;
             text-align: center;
-            padding: 50px 0;
+            padding: 50px;
         }
         h1 {
-            font-size: 40px;
+            font-size: 35px;
+            color: #333;
+            margin-bottom: 30px;
         }
-        input, button {
-            font-size: 18px;
+        .form-container {
+            margin-bottom: 30px;
+        }
+        .input-field {
             padding: 10px;
             margin: 10px;
-        }
-        input {
             width: 300px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
         }
-        button {
+        .submit-btn {
+            padding: 10px 20px;
             background-color: #0077cc;
             color: white;
             border: none;
+            border-radius: 25px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+        .submit-btn:hover {
             background-color: #005fa3;
         }
         .link-card {
@@ -39,6 +45,11 @@
             width: 80%;
             max-width: 400px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .link-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
         .link-card a {
             text-decoration: none;
@@ -53,11 +64,13 @@
 </head>
 <body>
     <h1>Links for {{ username }}</h1>
-    <form method="POST">
-        <input type="text" name="title" placeholder="Title" required>
-        <input type="text" name="url" placeholder="https://example.com" required>
-        <button type="submit">Add Link</button>
-    </form>
+    <div class="form-container">
+        <form method="POST">
+            <input type="text" name="title" class="input-field" placeholder="Title" required>
+            <input type="text" name="url" class="input-field" placeholder="https://example.com" required>
+            <button type="submit" class="submit-btn">Add Link</button>
+        </form>
+    </div>
     <ul>
         {% for title, url in links %}
         <li>
