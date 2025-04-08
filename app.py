@@ -4,10 +4,8 @@ import os
 
 app = Flask(__name__)
 
-# مكان تخزين بيانات اللينكات
 DATA_FILE = 'links_data.json'
 
-# إذا لم يكن الملف موجوداً، سيتم إنشاؤه
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({}, f)
@@ -43,7 +41,7 @@ def confirm_links(username):
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
-    # Generate the bio URL after confirmation
+    # توليد الرابط الفريد للمستخدم
     bio_url = f"/bio/{username}"
 
     return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
@@ -53,7 +51,6 @@ def show_bio(username):
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
-    # Retrieve user links
     user_links = data.get(username, [])
     return render_template('bio.html', username=username, links=user_links)
 
