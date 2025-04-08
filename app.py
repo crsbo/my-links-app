@@ -45,7 +45,7 @@ def confirm_links(username):
         data = json.load(f)
 
     bio_url = url_for('show_bio', username=username, _external=True)
-    return render_template('bio.html', username=username, links=data[username], bio_url=bio_url)
+    return render_template('confirm_links.html', username=username, bio_url=bio_url)
 
 # صفحة عرض البروفايل مع اللينكات
 @app.route('/bio/<username>')
@@ -54,8 +54,7 @@ def show_bio(username):
         data = json.load(f)
 
     user_links = data.get(username, [])
-    bio_url = url_for('show_bio', username=username, _external=True)
-    return render_template('bio.html', username=username, links=user_links, bio_url=bio_url)
+    return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
