@@ -6,46 +6,31 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #333;
+            background: #2f2f2f;
             color: white;
             text-align: center;
             padding: 50px;
         }
         h1 {
-            color: #ff7f50;
-            font-size: 2em;
+            color: #fff;
         }
         .link-card {
-            background: #444;
+            background: white;
             border-radius: 10px;
-            padding: 15px;
-            margin: 15px;
+            padding: 15px 20px;
+            margin: 15px auto;
             width: 80%;
             max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .link-card a {
             text-decoration: none;
-            color: #ff7f50;
+            color: #0077cc;
             font-weight: bold;
             font-size: 18px;
         }
         .link-card a:hover {
-            color: #ff6347;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #ff7f50;
-            border: none;
-            color: white;
-            font-size: 1.2em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background-color: #ff6347;
-            transform: scale(1.1);
+            color: #005fa3;
         }
     </style>
 </head>
@@ -61,25 +46,5 @@
     {% else %}
         <p>No links added yet.</p>
     {% endif %}
-    
-    <p>Your unique bio URL: 
-        <a href="{{ bio_url }}" target="_blank">{{ bio_url }}</a>
-    </p>
-
-    <!-- زر لنسخ الرابط -->
-    <button onclick="copyToClipboard()">Copy Bio URL</button>
-
-    <script>
-        function copyToClipboard() {
-            const bioUrl = "{{ bio_url }}";
-            const tempInput = document.createElement('input');
-            tempInput.value = bioUrl;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            alert('Bio URL copied to clipboard!');
-        }
-    </script>
 </body>
 </html>
