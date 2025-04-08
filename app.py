@@ -16,7 +16,23 @@ def home():
 @app.route('/add_links', methods=['POST'])
 def add_links():
     username = request.form['username']
-    return redirect(url_for('user_links', username=username))
+    user_url = request.form['url']
+    
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    if username not in data:
+        data[username] = []
+
+    data[username].append((username, user_url))  # إضافة الرابط الخاص بالمستخدم
+
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f)
+
+    # توليد الرابط المجمع للمستخدم
+    bio_url = url_for('show_bio', username=username, _external=True)
+
+    return render_template('index.html', bio_url=bio_url)  # إظهار الرابط المجمع في الصفحة
 
 @app.route('/add_links/<username>', methods=['GET', 'POST'])
 def user_links(username):
