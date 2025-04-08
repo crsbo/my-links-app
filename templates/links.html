@@ -8,90 +8,73 @@
             font-family: 'Segoe UI', sans-serif;
             background: #333;
             color: white;
-            text-align: center;
-            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
         }
         h1 {
-            font-size: 35px;
-            color: white;
-            margin-bottom: 40px;
+            font-size: 2em;
+            text-align: center;
         }
-        .input-container {
-            margin-bottom: 20px;
+        form {
+            text-align: center;
+            margin-top: 20px;
         }
-        .input-field {
-            padding: 12px;
-            margin: 10px;
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1.2em;
+            margin: 5px;
             width: 300px;
-            border-radius: 25px;
-            border: 1px solid #ddd;
-            background-color: #444;
-            color: white;
-            font-size: 16px;
-        }
-        .submit-btn {
-            padding: 12px 20px;
-            background-color: #28a745;
-            color: white;
+            border-radius: 8px;
             border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-        .submit-btn:hover {
-            background-color: #218838;
-        }
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-        .confirm-btn {
-            padding: 12px 20px;
-            background-color: #0077cc;
-            color: white;
+        button {
+            padding: 10px 20px;
+            background-color: #ff7f50;
             border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .confirm-btn:hover {
-            background-color: #005fa3;
-        }
-        .confirm-btn:active {
-            transform: scale(0.98);
-        }
-        .add-another-btn {
-            padding: 12px 20px;
-            background-color: #ffc107;
             color: white;
-            border: none;
-            border-radius: 25px;
+            font-size: 1.2em;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 20px;
+            transition: all 0.3s ease;
         }
-        .add-another-btn:hover {
-            background-color: #e0a800;
+        button:hover {
+            background-color: #ff6347;
+            transform: scale(1.1);
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #444;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
 <body>
     <h1>Links for {{ username }}</h1>
-
     <form method="POST">
-        <div class="input-container">
-            <input type="text" name="title" class="input-field" placeholder="Link Title" required>
-        </div>
-        <div class="input-container">
-            <input type="text" name="url" class="input-field" placeholder="https://example.com" required>
-        </div>
-        <button type="submit" class="submit-btn">Add Link</button>
+        <input type="text" name="title" placeholder="Link Title" required>
+        <input type="text" name="url" placeholder="https://example.com" required>
+        <button type="submit">Add Link</button>
     </form>
-
-    <form action="/confirm_links/{{ username }}" method="POST">
-        <button type="submit" class="confirm-btn">Confirm Links</button>
-    </form>
-
-    <form action="/add_links/{{ username }}" method="GET">
-        <button type="submit" class="add-another-btn">Add Another Link</button>
+    <ul>
+        {% for title, url in links %}
+        <li>
+            <a href="{{ url }}" target="_blank">{{ title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <form action="{{ url_for('confirm_links', username=username) }}" method="POST">
+        <button type="submit">Confirm Links</button>
     </form>
 </body>
 </html>
