@@ -6,75 +6,77 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #333;
+            background: #2f2f2f;
             color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
+            text-align: center;
+            padding: 50px;
         }
         h1 {
-            font-size: 2em;
-            text-align: center;
+            color: #fff;
         }
-        form {
-            text-align: center;
-            margin-top: 20px;
-        }
-        input[type="text"] {
+        input, button {
+            font-size: 18px;
             padding: 10px;
-            font-size: 1.2em;
-            margin: 5px;
-            width: 300px;
+            margin: 10px;
             border-radius: 8px;
-            border: none;
         }
         button {
-            padding: 10px 20px;
-            background-color: #ff7f50;
-            border: none;
+            background-color: #0077cc;
             color: white;
-            font-size: 1.2em;
-            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #ff6347;
             transform: scale(1.1);
+            background-color: #005fa3;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background: #444;
+        .bio-link {
+            margin-top: 20px;
+            font-size: 20px;
+            background-color: #444;
             padding: 15px;
-            margin: 10px;
             border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
+            display: inline-block;
+            width: 80%;
+        }
+        .bio-link a {
+            color: #ffcc00;
+            text-decoration: none;
+        }
+        .bio-link a:hover {
+            color: #ff9900;
         }
     </style>
 </head>
 <body>
-    <h1>Links for {{ username }}</h1>
+    <h1>Adding Links for {{ username }}</h1>
     <form method="POST">
         <input type="text" name="title" placeholder="Link Title" required>
         <input type="text" name="url" placeholder="https://example.com" required>
         <button type="submit">Add Link</button>
     </form>
-    <ul>
-        {% for title, url in links %}
-        <li>
-            <a href="{{ url }}" target="_blank">{{ title }}</a>
-        </li>
-        {% endfor %}
-    </ul>
-    <form action="{{ url_for('confirm_links', username=username) }}" method="POST">
+    <br><br>
+    <form action="/add_links/{{ username }}" method="POST">
         <button type="submit">Confirm Links</button>
     </form>
+
+    {% if bio_url %}
+        <div class="bio-link">
+            <p>Your Bio Link: <a href="{{ bio_url }}" target="_blank">{{ bio_url }}</a></p>
+            <button onclick="copyToClipboard('{{ bio_url }}')">Copy Link</button>
+        </div>
+    {% endif %}
+
+    <script>
+        function copyToClipboard(text) {
+            var tempInput = document.createElement("input");
+            document.body.appendChild(tempInput);
+            tempInput.value = text;
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Link copied to clipboard!");
+        }
+    </script>
 </body>
 </html>
