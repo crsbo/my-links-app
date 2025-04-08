@@ -32,24 +32,20 @@ def add_links():
     # توليد الرابط المجمع للمستخدم
     bio_url = url_for('show_bio', username=username, _external=True)
 
-    return render_template('index.html', bio_url=bio_url)  # إظهار الرابط المجمع في الصفحة
+    return render_template('index.html', bio_url=bio_url, username=username, links=data[username])  # عرض اللينكات التي تم إدخالها
 
-@app.route('/add_links/<username>', methods=['GET', 'POST'])
-def user_links(username):
+@app.route('/confirm_links/<username>', methods=['POST'])
+def confirm_links(username):
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
     if username not in data:
         data[username] = []
 
-    if request.method == 'POST':
-        title = request.form['title']
-        url = request.form['url']
-        data[username].append((title, url))
-        with open(DATA_FILE, 'w') as f:
-            json.dump(data, f)
+    # توليد الرابط المجمع النهائي للمستخدم
+    bio_url = url_for('show_bio', username=username, _external=True)
 
-    return render_template('links.html', username=username, links=data[username])
+    return render_template('index.html', bio_url=bio_url, username=username, links=data[username])  # عرض الرابط المجمع بعد التأكيد
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
