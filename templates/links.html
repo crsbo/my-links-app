@@ -6,21 +6,17 @@
 </head>
 <body>
     <h1>Links for {{ username }}</h1>
-    
-    <!-- إضافة رابط جديد -->
     <form method="POST">
         <input type="text" name="title" placeholder="Title" required>
         <input type="text" name="url" placeholder="https://example.com" required>
         <button type="submit">Add Link</button>
     </form>
-
-    <!-- عرض الروابط -->
     <ul>
-        {% for link in links %}
-            <li>
-                <a href="{{ link[1] }}" target="_blank">{{ link[0] }}</a>
-                <a href="{{ url_for('delete_link', username=username, index=loop.index0) }}">❌ Delete</a>
-            </li>
+        {% for title, url in links %}
+        <li>
+            <a href="{{ url }}" target="_blank">{{ title }}</a>
+            <a href="{{ url_for('delete_link', username=username, index=loop.index0) }}">❌ Delete</a>
+        </li>
         {% endfor %}
     </ul>
 </body>
