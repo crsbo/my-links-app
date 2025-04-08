@@ -5,11 +5,12 @@ import os
 app = Flask(__name__)
 DATA_FILE = 'links_data.json'
 
+# التحقق من وجود الملف وإنشاؤه في حال عدم وجوده
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({}, f)
 
-# الصفحة الرئيسية لإدخال اسم المستخدم فقط
+# الصفحة الرئيسية لإدخال اسم المستخدم
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -41,4 +42,21 @@ def user_links(username):
 @app.route('/confirm_links/<username>', methods=['POST'])
 def confirm_links(username):
     with open(DATA_FILE, 'r') as f:
-        data = json.load(f
+        data = json.load(f)
+
+    bio_url = url_for('show_bio', username=username, _external=True)
+    return render_template('bio.html', username=username, links=data[username], bio_url=bio_url)
+
+# صفحة عرض البروفايل مع اللينكات
+@app.route('/bio/<username>')
+def show_bio(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    user_links = data.get(username, [])
+    bio_url = url_for('show_bio', username=username, _external=True)
+    return render_template('bio.html', username=username, links=user_links, bio_url=bio_url)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
