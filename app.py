@@ -53,14 +53,7 @@ def show_bio(username):
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
-    user_links = data.get(username, [])
-    return render_template('bio.html', username=username, links=user_links)
-
-@app.route('/user_bio/<username>')
-def user_bio(username):
-    with open(DATA_FILE, 'r') as f:
-        data = json.load(f)
-
+    # Retrieve user links
     user_links = data.get(username, [])
     return render_template('bio.html', username=username, links=user_links)
 
