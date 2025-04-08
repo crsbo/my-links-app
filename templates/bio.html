@@ -1,4 +1,3 @@
-<!-- templates/bio.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,9 +37,9 @@
     <h1>{{ username }}'s Links</h1>
 
     {% if links %}
-        {% for title, url in links %}
+        {% for link in links %}
             <div class="link-card">
-                <a href="{{ url }}" target="_blank">{{ title }}</a>
+                <a href="{{ link.url }}" target="_blank">{{ link.title }}</a>
             </div>
         {% endfor %}
     {% else %}
