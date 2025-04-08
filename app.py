@@ -3,8 +3,11 @@ import json
 import os
 
 app = Flask(__name__)
+
+# تعيين مكان تخزين بيانات اللينكات
 DATA_FILE = 'links_data.json'
 
+# إذا لم يكن الملف موجوداً، سيتم إنشاؤه
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump({}, f)
@@ -57,4 +60,5 @@ def show_bio(username):
     return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # اختيار البورت بشكل ديناميكي على Railway
+    app.run(host="0.0.0.0", port=port, debug=True)
