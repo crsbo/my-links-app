@@ -7,37 +7,68 @@
         body {
             font-family: 'Segoe UI', sans-serif;
             background: #333;
-            color: #fff;
+            color: white;
             text-align: center;
-            padding: 100px 0;
+            padding: 50px;
         }
         h1 {
             font-size: 40px;
+            color: #fff;
         }
-        input, button {
-            font-size: 18px;
+        .input-container {
+            margin-bottom: 20px;
+        }
+        .input-field {
             padding: 10px;
             margin: 10px;
-        }
-        input {
             width: 300px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
         }
-        button {
+        .submit-btn {
+            padding: 10px 20px;
             background-color: #0077cc;
             color: white;
             border: none;
+            border-radius: 25px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+        .submit-btn:hover {
+            background-color: #005fa3;
+        }
+        .bio-url {
+            font-size: 20px;
+            background-color: #0077cc;
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .bio-url:hover {
             background-color: #005fa3;
         }
     </style>
 </head>
 <body>
-    <h1>Enter Your Name</h1>
+    <h1>Enter Your Name and Links</h1>
+
     <form action="/add_links" method="POST">
-        <input type="text" name="username" placeholder="Your Name" required>
-        <button type="submit">Go to My Links</button>
+        <div class="input-container">
+            <input type="text" name="username" class="input-field" placeholder="Your Name" required>
+        </div>
+        <div class="input-container">
+            <input type="text" name="url" class="input-field" placeholder="https://example.com" required>
+        </div>
+        <button type="submit" class="submit-btn">Go to My Links</button>
     </form>
+
+    {% if bio_url %}
+        <h2>Your Bio Link:</h2>
+        <a href="{{ bio_url }}" target="_blank" class="bio-url">{{ bio_url }}</a>
+    {% endif %}
 </body>
 </html>
