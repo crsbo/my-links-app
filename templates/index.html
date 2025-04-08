@@ -51,6 +51,18 @@
         .bio-url:hover {
             background-color: #005fa3;
         }
+        .confirm-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .confirm-btn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +81,12 @@
     {% if bio_url %}
         <h2>Your Bio Link:</h2>
         <a href="{{ bio_url }}" target="_blank" class="bio-url">{{ bio_url }}</a>
+    {% endif %}
+
+    {% if links %}
+        <form action="/confirm_links/{{ username }}" method="POST">
+            <button type="submit" class="confirm-btn">Confirm Links</button>
+        </form>
     {% endif %}
 </body>
 </html>
