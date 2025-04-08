@@ -21,9 +21,11 @@ def add_links():
 
 @app.route('/add_links/<username>', methods=['GET', 'POST'])
 def user_links(username):
+    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
+    # التأكد من أن المستخدم موجود في البيانات
     if username not in data:
         data[username] = []
 
@@ -31,6 +33,7 @@ def user_links(username):
         title = request.form['title']
         url = request.form['url']
         data[username].append((title, url))
+        # تحديث البيانات في الملف
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f)
 
@@ -38,12 +41,14 @@ def user_links(username):
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
+    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
     if username in data and 0 <= index < len(data[username]):
         data[username].pop(index)
 
+    # تحديث البيانات في الملف
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
 
@@ -51,6 +56,7 @@ def delete_link(username, index):
 
 @app.route('/bio/<username>')
 def show_bio(username):
+    # فتح ملف البيانات
     with open(DATA_FILE, 'r') as f:
         data = json.load(f)
 
@@ -58,4 +64,5 @@ def show_bio(username):
     return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
-    app.run(debug=True)  # تشغيل التطبيق في وضع الـ Debug
+    port = int(os.environ.get("PORT", 5000))  # الحصول على البورت من المتغيرات البيئية
+    app.run(host="0.0.0.0", port=port, debug=True)  # تشغيل التطبيق في وضع الـ debug
