@@ -3,7 +3,6 @@ import json
 import os
 
 app = Flask(__name__)
-
 DATA_FILE = 'links_data.json'
 
 if not os.path.exists(DATA_FILE):
@@ -34,25 +33,7 @@ def user_links(username):
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f)
 
-    return render_template('links.html', username=username, links=data[username], bio_url=None)
-
-@app.route('/confirm_links/<username>', methods=['POST'])
-def confirm_links(username):
-    with open(DATA_FILE, 'r') as f:
-        data = json.load(f)
-
-    # توليد الرابط الفريد للمستخدم
-    bio_url = f"/bio/{username}"
-
-    return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
-
-@app.route('/bio/<username>')
-def show_bio(username):
-    with open(DATA_FILE, 'r') as f:
-        data = json.load(f)
-
-    user_links = data.get(username, [])
-    return render_template('bio.html', username=username, links=user_links)
+    return render_template('links.html', username=username, links=data[username])
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
@@ -67,6 +48,24 @@ def delete_link(username, index):
 
     return redirect(url_for('user_links', username=username))
 
+@app.route('/confirm_links/<username>', methods=['POST'])
+def confirm_links(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    # توليد الرابط الفريد للمستخدم مع اسم المستخدم في الرابط
+    bio_url = f"https://{request.host}/bio/{username}"
+
+    return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
+
+@app.route('/bio/<username>')
+def show_bio(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    user_links = data.get(username, [])
+    return render_template('bio.html', username=username, links=user_links)
+
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # تعيين البورت بشكل ديناميكي على Railway
-    app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
