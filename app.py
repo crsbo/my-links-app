@@ -1,27 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
-import os
 import sqlite3
+import os
 
 app = Flask(__name__)
+
+# مسار قاعدة البيانات (سيتم استخدامه على Railway)
 DATABASE = 'database.db'
 
-# دالة لفتح قاعدة البيانات
+# الاتصال بقاعدة البيانات
 def get_db():
     conn = sqlite3.connect(DATABASE)
     return conn
-
-# التأكد من أن قاعدة البيانات موجودة
-def init_db():
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS links (username TEXT, title TEXT, url TEXT)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS messages (username TEXT, message TEXT)''')
-    conn.commit()
-    conn.close()
-
-# تهيئة قاعدة البيانات عند تشغيل السيرفر
-init_db()
 
 @app.route('/')
 def home():
@@ -35,67 +24,84 @@ def add_links():
 @app.route('/add_links/<username>', methods=['GET', 'POST'])
 def user_links(username):
     conn = get_db()
-    c = conn.cursor()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+    
+    if user is None:
+        return redirect(url_for('home'))
+
+    user_id = user[0]
 
     if request.method == 'POST':
         title = request.form['title']
         url = request.form['url']
-        c.execute('INSERT INTO links (username, title, url) VALUES (?, ?, ?)', (username, title, url))
+        cursor.execute("INSERT INTO links (user_id, title, url) VALUES (?, ?, ?)", (user_id, title, url))
         conn.commit()
 
-    c.execute('SELECT title, url FROM links WHERE username = ?', (username,))
-    links = c.fetchall()
-    conn.close()
+    cursor.execute("SELECT title, url FROM links WHERE user_id=?", (user_id,))
+    links = cursor.fetchall()
 
     return render_template('links.html', username=username, links=links)
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
     conn = get_db()
-    c = conn.cursor()
-    c.execute('DELETE FROM links WHERE username = ? AND rowid = ?', (username, index + 1))
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+
+    if user is None:
+        return redirect(url_for('home'))
+
+    user_id = user[0]
+    cursor.execute("DELETE FROM links WHERE user_id=? AND id=?", (user_id, index))
     conn.commit()
-    conn.close()
+
     return redirect(url_for('user_links', username=username))
-
-@app.route('/send_message/<username>', methods=['POST'])
-def send_message(username):
-    message = request.form['message']
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('INSERT INTO messages (username, message) VALUES (?, ?)', (username, message))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('show_bio', username=username))
-
-@app.route('/view_messages/<username>')
-def view_messages(username):
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('SELECT message FROM messages WHERE username = ?', (username,))
-    messages = c.fetchall()
-    conn.close()
-    return render_template('messages.html', username=username, messages=messages)
-
-@app.route('/confirm_links/<username>', methods=['POST'])
-def confirm_links(username):
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('SELECT title, url FROM links WHERE username = ?', (username,))
-    links = c.fetchall()
-    conn.close()
-    
-    bio_url = f"https://{request.host}/bio/{username}"
-    return render_template('links.html', username=username, links=links, bio_url=bio_url)
 
 @app.route('/bio/<username>')
 def show_bio(username):
     conn = get_db()
-    c = conn.cursor()
-    c.execute('SELECT title, url FROM links WHERE username = ?', (username,))
-    links = c.fetchall()
-    conn.close()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+
+    if user is None:
+        return redirect(url_for('home'))
+
+    user_id = user[0]
+    cursor.execute("SELECT title, url FROM links WHERE user_id=?", (user_id,))
+    links = cursor.fetchall()
+
     return render_template('bio.html', username=username, links=links)
 
+@app.route('/send_message', methods=['GET', 'POST'])
+def send_message():
+    if request.method == 'POST':
+        anonymous_sender = request.form['anonymous_sender']
+        message = request.form['message']
+        username = request.form['username']
+
+        # الحصول على user_id من قاعدة البيانات
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE username=?", (username,))
+        user = cursor.fetchone()
+
+        if user is None:
+            return redirect(url_for('home'))
+
+        user_id = user[0]
+        cursor.execute("INSERT INTO messages (user_id, message, anonymous_sender) VALUES (?, ?, ?)", (user_id, message, anonymous_sender))
+        conn.commit()
+
+        return redirect(url_for('home'))
+
+    return render_template('send_message.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
