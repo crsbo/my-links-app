@@ -67,5 +67,28 @@
             </div>
         {% endfor %}
     {% endif %}
+
+    <form action="/confirm_links/{{ username }}" method="POST">
+        <button type="submit">Confirm Links</button>
+    </form>
+
+    {% if bio_url %}
+        <div class="link-card">
+            <p>Your Bio Link: <a href="{{ bio_url }}" target="_blank">{{ bio_url }}</a></p>
+            <button onclick="copyToClipboard('{{ bio_url }}')">Copy Link</button>
+        </div>
+    {% endif %}
+
+    <script>
+        function copyToClipboard(text) {
+            var tempInput = document.createElement("input");
+            document.body.appendChild(tempInput);
+            tempInput.value = text;
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Link copied to clipboard!");
+        }
+    </script>
 </body>
 </html>
