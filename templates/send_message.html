@@ -11,7 +11,10 @@
             text-align: center;
             padding: 50px;
         }
-        textarea, button {
+        h1 {
+            color: #fff;
+        }
+        input, button {
             font-size: 18px;
             padding: 10px;
             margin: 10px;
@@ -31,21 +34,14 @@
 </head>
 <body>
     <h1>Send an Anonymous Message to {{ username }}</h1>
+
     <form action="/send_message/{{ username }}" method="POST">
-        <textarea name="message" placeholder="Your anonymous message..." required></textarea><br>
+        <textarea name="message" placeholder="Write your anonymous message here" rows="4" required></textarea>
+        <br>
         <button type="submit">Send Message</button>
     </form>
 
     <br><br>
-
-    {% if message %}
-        <h3>Message Preview:</h3>
-        <p>{{ message }}</p>
-
-        <!-- Button to open Instagram with message -->
-        <a href="https://www.instagram.com/create/style/?text={{ message }}" target="_blank">
-            <button>Share on Instagram</button>
-        </a>
-    {% endif %}
+    <a href="/bio/{{ username }}">Back to {{ username }}'s Bio</a>
 </body>
 </html>
