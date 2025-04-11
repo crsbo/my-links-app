@@ -68,6 +68,11 @@
         {% endfor %}
     {% endif %}
 
+    <form action="/send_message/{{ username }}" method="POST">
+        <input type="text" name="message" placeholder="Send a message anonymously" required>
+        <button type="submit">Send Message</button>
+    </form>
+
     <form action="/confirm_links/{{ username }}" method="POST">
         <button type="submit">Confirm Links</button>
     </form>
