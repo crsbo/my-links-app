@@ -20,15 +20,18 @@
             max-width: 400px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        .message-card p {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
-    <h1>{{ username }}'s Messages</h1>
+    <h1>Messages for {{ username }}</h1>
 
     {% if messages %}
         {% for message in messages %}
             <div class="message-card">
-                <p>{{ message }}</p>
+                <p>{{ message[0] }}</p>
             </div>
         {% endfor %}
     {% else %}
