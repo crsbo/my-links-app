@@ -1,16 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
+import json
 import os
 
 app = Flask(__name__)
+DATA_FILE = 'links_data.json'
 
-# مسار قاعدة البيانات (سيتم استخدامه على Railway)
-DATABASE = 'database.db'
-
-# الاتصال بقاعدة البيانات
-def get_db():
-    conn = sqlite3.connect(DATABASE)
-    return conn
+if not os.path.exists(DATA_FILE):
+    with open(DATA_FILE, 'w') as f:
+        json.dump({}, f)
 
 @app.route('/')
 def home():
@@ -23,84 +20,51 @@ def add_links():
 
 @app.route('/add_links/<username>', methods=['GET', 'POST'])
 def user_links(username):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
-    user = cursor.fetchone()
-    
-    if user is None:
-        return redirect(url_for('home'))
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
 
-    user_id = user[0]
+    if username not in data:
+        data[username] = []
 
     if request.method == 'POST':
         title = request.form['title']
         url = request.form['url']
-        cursor.execute("INSERT INTO links (user_id, title, url) VALUES (?, ?, ?)", (user_id, title, url))
-        conn.commit()
+        data[username].append((title, url))
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f)
 
-    cursor.execute("SELECT title, url FROM links WHERE user_id=?", (user_id,))
-    links = cursor.fetchall()
-
-    return render_template('links.html', username=username, links=links)
+    return render_template('links.html', username=username, links=data[username])
 
 @app.route('/delete_link/<username>/<int:index>')
 def delete_link(username, index):
-    conn = get_db()
-    cursor = conn.cursor()
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
 
-    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
-    user = cursor.fetchone()
+    if username in data and 0 <= index < len(data[username]):
+        data[username].pop(index)
 
-    if user is None:
-        return redirect(url_for('home'))
-
-    user_id = user[0]
-    cursor.execute("DELETE FROM links WHERE user_id=? AND id=?", (user_id, index))
-    conn.commit()
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f)
 
     return redirect(url_for('user_links', username=username))
 
+@app.route('/confirm_links/<username>', methods=['POST'])
+def confirm_links(username):
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
+
+    # توليد الرابط الفريد للمستخدم مع اسم المستخدم في الرابط
+    bio_url = f"https://{request.host}/bio/{username}"
+
+    return render_template('links.html', username=username, links=data[username], bio_url=bio_url)
+
 @app.route('/bio/<username>')
 def show_bio(username):
-    conn = get_db()
-    cursor = conn.cursor()
+    with open(DATA_FILE, 'r') as f:
+        data = json.load(f)
 
-    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
-    user = cursor.fetchone()
-
-    if user is None:
-        return redirect(url_for('home'))
-
-    user_id = user[0]
-    cursor.execute("SELECT title, url FROM links WHERE user_id=?", (user_id,))
-    links = cursor.fetchall()
-
-    return render_template('bio.html', username=username, links=links)
-
-@app.route('/send_message', methods=['GET', 'POST'])
-def send_message():
-    if request.method == 'POST':
-        anonymous_sender = request.form['anonymous_sender']
-        message = request.form['message']
-        username = request.form['username']
-
-        # الحصول على user_id من قاعدة البيانات
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE username=?", (username,))
-        user = cursor.fetchone()
-
-        if user is None:
-            return redirect(url_for('home'))
-
-        user_id = user[0]
-        cursor.execute("INSERT INTO messages (user_id, message, anonymous_sender) VALUES (?, ?, ?)", (user_id, message, anonymous_sender))
-        conn.commit()
-
-        return redirect(url_for('home'))
-
-    return render_template('send_message.html')
+    user_links = data.get(username, [])
+    return render_template('bio.html', username=username, links=user_links)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
