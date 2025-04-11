@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Anonymous Message</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #2f2f2f;
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+        textarea, button {
+            font-size: 18px;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #0077cc;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.1);
+            background-color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Send an Anonymous Message to {{ username }}</h1>
+    <form action="/send_message/{{ username }}" method="POST">
+        <textarea name="message" placeholder="Your anonymous message..." required></textarea><br>
+        <button type="submit">Send Message</button>
+    </form>
+
+    <br><br>
+
+    {% if message %}
+        <h3>Message Preview:</h3>
+        <p>{{ message }}</p>
+
+        <!-- Button to open Instagram with message -->
+        <a href="https://www.instagram.com/create/style/?text={{ message }}" target="_blank">
+            <button>Share on Instagram</button>
+        </a>
+    {% endif %}
+</body>
+</html>
